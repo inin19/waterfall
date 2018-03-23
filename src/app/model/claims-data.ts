@@ -203,6 +203,7 @@ export class ClaimsData {
         return this.claimsAggregateData;
     }
 
+    // getAggregate Total
     getClaimsAggregateDataTotal(): any {
         return this.claimsAggregateDataTotal;
     }
