@@ -19,7 +19,7 @@
             "name": "Launch firefox",
             "type": "firefox",
             "request": "launch",
-            // "reAttach": true,
+            "reAttach": true,
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}"
         }

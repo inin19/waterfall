@@ -18,7 +18,6 @@ export class WaterfallChartComponent implements OnInit {
 
   private benchmarkClaimData: ClaimsData;
 
-  private benchmarkGridAndTotal: any[];
 
 
   constructor() { }
@@ -31,17 +30,16 @@ export class WaterfallChartComponent implements OnInit {
   getChartData() {
     this.benchmarkClaimData = new ClaimsData(this.claimsData, this.totalMemberCount);
 
-    // this.benchmarkGridAndTotal =
-    //   this.benchmarkClaimData.getClaimsAggregateData().concat(this.benchmarkClaimData.getClaimsAggregateDataTotal());
+
+    // this.benchmarkClaimData.processGraphData(this.totalMemberCount,
+    //   ['REGION_CENTRAL_LONDON', 'REGION_GREATER_LONDON'], undefined, ['F'], ['CLAIM_TYPE_DAYCARE', 'CLAIM_TYPE_IN_PATIENT']);
+
+    const benchmarkClaimDataAndTotal =
+      this.benchmarkClaimData.getClaimsAggregateData().concat(this.benchmarkClaimData.getClaimsAggregateDataTotal());
 
 
-    let total = this.benchmarkClaimData.getClaimsAggregateDataTotal();
+    console.log(benchmarkClaimDataAndTotal);
 
-    this.benchmarkClaimData.processGraphData(this.totalMemberCount,
-      ['REGION_CENTRAL_LONDON', 'REGION_GREATER_LONDON'], undefined, ['F'], ['CLAIM_TYPE_DAYCARE', 'CLAIM_TYPE_IN_PATIENT']);
-
-
-    total = this.benchmarkClaimData.getClaimsAggregateDataTotal();
   }
 
 

@@ -3,6 +3,20 @@ import { ClaimDataService } from '../service/claim-data.service';
 // import * as jp from 'jsonpath';
 
 export class ClaimsData {
+
+    static UK_ConditionGrouping = [
+        'CONDITION_GROUPING_CIRCULATORY',
+        'CONDITION_GROUPING_DIGESTIVE',
+        'CONDITION_GROUPING_INJURY_&_ACCIDENT',
+        'CONDITION_GROUPING_MENTAL_DISORDERS',
+        'CONDITION_GROUPING_MUSCULOSKELETAL',
+        'CONDITION_GROUPING_NEOPLASMS',
+        'CONDITION_GROUPING_OTHER',
+        'CONDITION_GROUPING_PREGNANCY',
+        'CONDITION_GROUPING_RESPIRATORY',
+        'CONDITION_GROUPING_SS_&_IDC'
+    ];
+
     private ndx: crossfilter.Crossfilter<any>;
     // dimensions
     private relationDimension: crossfilter.Dimension<any, any>;
@@ -18,10 +32,15 @@ export class ClaimsData {
 
     private conditionGroupingDimensionGroup: crossfilter.Group<any, any, any>;
 
+    private claimWaterfallChartPrevYearData: any;
+    private claimWaterfallChartCurrYearData: any;
+
+
 
     // output
     private claimsAggregateData: any[];
     private claimsAggregateDataTotal: any;
+    private claimsWaterfallChartData: any[];
 
     // private temp: any[];
 
@@ -98,8 +117,6 @@ export class ClaimsData {
         // preYearClaimCount_sum: 15629,
         // preYeartotalClaimCostAmount_sum: 1006810 }
 
-
-
         const curYearMemeberCount = totalMemeberCount.filter((d) => d.year === 'currentYear')[0].memeberCount;
         const preYearMemeberCount = totalMemeberCount.filter((d) => d.year === 'previousYear')[0].memeberCount;
 
@@ -122,13 +139,6 @@ export class ClaimsData {
             element.preYearAvgClaimCost = element.value.preYeartotalClaimCostAmount_sum / element.value.preYearClaimCount_sum;
         });
 
-
-        // console.log('aggregate');
-        // console.log(this.claimsAggregateData);
-
-
-        // console.log('temp');
-        // console.log(this.temp);
 
 
 
@@ -160,16 +170,25 @@ export class ClaimsData {
             'preYearAvgClaimCost': value.preYeartotalClaimCostAmount_sum / value.preYearClaimCount_sum
         };
 
-
         this.claimsAggregateDataTotal = total;
 
-        // this.claimsAggregateData.push(total);
+        this.claimWaterfallChartPrevYearData = {
+            key: 'PREYEAR',
+            Base: 0,
+            Fall: 0,
+            Rise: total.preYearAvgClaimCost,
+            Per_Capita: total.preYearAvgClaimCost
+        };
 
+        this.claimWaterfallChartCurrYearData = {
+            key: 'CURRYEAR',
+            Base: 0,
+            Fall: 0,
+            Rise: total.curYearAvgClaimCost,
+            Per_Capita: total.curYearAvgClaimCost
+        };
 
-        // this.claimsAggregateData.forEach(element => {
-        //     console.log(element);
-        // });
-
+        // console.log(previousYear, currentYear);
 
     }
 
@@ -208,5 +227,8 @@ export class ClaimsData {
         return this.claimsAggregateDataTotal;
     }
 
+    getClaimsWaterfallChartData(): any[] {
+        return this.claimsWaterfallChartData;
+    }
 
 }
