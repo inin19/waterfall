@@ -21,6 +21,7 @@ export class ClaimsData {
 
     // output
     private claimsAggregateData: any[];
+    private claimsAggregateDataTotal: any;
 
     // private temp: any[];
 
@@ -160,6 +161,8 @@ export class ClaimsData {
         };
 
 
+        this.claimsAggregateDataTotal = total;
+
         // this.claimsAggregateData.push(total);
 
 
@@ -198,6 +201,10 @@ export class ClaimsData {
 
     getClaimsAggregateData(): any[] {
         return this.claimsAggregateData;
+    }
+
+    getClaimsAggregateDataTotal(): any {
+        return this.claimsAggregateDataTotal;
     }
 
 

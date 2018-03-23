@@ -18,6 +18,9 @@ export class WaterfallChartComponent implements OnInit {
 
   private benchmarkClaimData: ClaimsData;
 
+  private benchmarkGridAndTotal: any[];
+
+
   constructor() { }
 
   ngOnInit() {
@@ -28,33 +31,17 @@ export class WaterfallChartComponent implements OnInit {
   getChartData() {
     this.benchmarkClaimData = new ClaimsData(this.claimsData, this.totalMemberCount);
 
-    const abc  = this.benchmarkClaimData.getClaimsAggregateData();
+    // this.benchmarkGridAndTotal =
+    //   this.benchmarkClaimData.getClaimsAggregateData().concat(this.benchmarkClaimData.getClaimsAggregateDataTotal());
 
 
+    let total = this.benchmarkClaimData.getClaimsAggregateDataTotal();
 
     this.benchmarkClaimData.processGraphData(this.totalMemberCount,
       ['REGION_CENTRAL_LONDON', 'REGION_GREATER_LONDON'], undefined, ['F'], ['CLAIM_TYPE_DAYCARE', 'CLAIM_TYPE_IN_PATIENT']);
 
 
-
-    console.log('in component');
-    console.log(this.benchmarkClaimData.getClaimsAggregateData());
-
-
-    this.benchmarkClaimData.processGraphData(this.totalMemberCount);
-
-    console.log('in component2');
-    console.log(this.benchmarkClaimData.getClaimsAggregateData());
-    console.log(abc);
-
-
-
-
-    // this.benchmarkClaimData.processGraphData(this.totalMemberCount);
-
-    // console.log(this.benchmarkClaimData.getClaimsAggregateData());
-
-
+    total = this.benchmarkClaimData.getClaimsAggregateDataTotal();
   }
 
 

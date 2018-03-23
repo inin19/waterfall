@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges } from '@angular/core';
 import { ClaimDataService } from './service/claim-data.service';
-import { Observable } from 'rxjs/Rx';
+
 
 
 @Component({
@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
           this.json = data[0];
           this.memberCount = data[1];
         }
-      )
+      );
   }
 
 
