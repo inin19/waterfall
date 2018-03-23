@@ -12,7 +12,7 @@ import * as d3 from 'd3';
 export class WaterfallChartComponent implements OnInit {
 
 
-  @Input() private claimsData: any[];
+  @Input() private claimsJsonData: any[];
   @Input() private totalMemberCount: any[];
 
 
@@ -23,12 +23,14 @@ export class WaterfallChartComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+
+    console.log(this.claimsJsonData);
     this.getChartData();
 
   }
 
   getChartData() {
-    this.benchmarkClaimData = new ClaimsData(this.claimsData, this.totalMemberCount);
+    this.benchmarkClaimData = new ClaimsData(this.claimsJsonData, this.totalMemberCount);
 
 
     // this.benchmarkClaimData.processGraphData(this.totalMemberCount,
@@ -38,7 +40,7 @@ export class WaterfallChartComponent implements OnInit {
       this.benchmarkClaimData.getClaimsAggregateData().concat(this.benchmarkClaimData.getClaimsAggregateDataTotal());
 
 
-    console.log(benchmarkClaimDataAndTotal);
+    // console.log(benchmarkClaimDataAndTotal);
 
   }
 
