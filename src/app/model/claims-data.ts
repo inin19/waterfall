@@ -31,7 +31,7 @@ export class ClaimsData {
     constructor(claimData: any[], totalMemeberCount: any[]) {
 
         this.createDimensionGroup(claimData);
-        // this.processGraphData(totalMemeberCount);
+        this.processGraphData(totalMemeberCount);
 
     }
 

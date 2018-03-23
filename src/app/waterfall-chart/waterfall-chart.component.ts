@@ -28,7 +28,7 @@ export class WaterfallChartComponent implements OnInit {
   getChartData() {
     this.benchmarkClaimData = new ClaimsData(this.claimsData, this.totalMemberCount);
 
-
+    const abc  = this.benchmarkClaimData.getClaimsAggregateData();
 
 
 
@@ -41,10 +41,11 @@ export class WaterfallChartComponent implements OnInit {
     console.log(this.benchmarkClaimData.getClaimsAggregateData());
 
 
-    // this.benchmarkClaimData.processGraphData(this.totalMemberCount);
+    this.benchmarkClaimData.processGraphData(this.totalMemberCount);
 
-    // console.log('in component2');
-    // console.log(this.benchmarkClaimData.getClaimsAggregateData());
+    console.log('in component2');
+    console.log(this.benchmarkClaimData.getClaimsAggregateData());
+    console.log(abc);
 
 
 
