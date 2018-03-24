@@ -1,6 +1,6 @@
 import * as crossfilter from 'crossfilter2';
 import { ClaimDataService } from '../service/claim-data.service';
-// import * as jp from 'jsonpath';
+import * as jp from 'jsonpath';
 
 export class ClaimsData {
 
@@ -181,19 +181,52 @@ export class ClaimsData {
             key: 'PREYEAR',
             Base: 0,
             Fall: 0,
-            Rise: total.prevYearAvgClaimCost,
-            Per_Capita: total.prevYearAvgClaimCost
+            Rise: total.prevYearPerCapitalClaimCost,
+            Per_Capita: total.prevYearPerCapitalClaimCost
         };
 
         this.claimWaterfallChartCurrYearData = {
             key: 'CURRYEAR',
             Base: 0,
             Fall: 0,
-            Rise: total.currYearAvgClaimCost,
-            Per_Capita: total.currYearAvgClaimCost
+            Rise: total.currYearPerCapitalClaimCost,
+            Per_Capita: total.currYearPerCapitalClaimCost
         };
 
-        // console.log(this.claimWaterfallChartPrevYearData, this.claimWaterfallChartCurrYearData);
+
+        // claimsWaterfallChartData
+
+        // console.log(this.claimWaterfallChartPrevYearData , this.claimWaterfallChartCurrYearData);
+
+
+        console.log(this.claimsAggregateData);
+
+        this.temp = new Array();
+
+        ClaimsData.UK_ConditionGrouping.forEach(element => {
+            const item = this.claimsAggregateData.filter((val) => val.key === element);
+            if (item) {
+                this.temp.push({
+                    key: item[0].key,
+                    Base: 0,
+                    Fall: 0,
+                    Rise: 0,
+                    Per_Capita: item[0].currYearPerCapitalClaimCost - item[0].prevYearPerCapitalClaimCost
+                });
+            } else {
+                this.temp.push({
+                    key: element,
+                    Base: 0,
+                    Fall: 0,
+                    Rise: 0,
+                    Per_Capita: 0
+                });
+            }
+        });
+
+        // validation
+        // const sum = this.temp.reduce((prev, curr) => (prev + curr.Per_Capita), 0);
+
 
         // this.temp = [
         //     { key: 'a', value: 4 },

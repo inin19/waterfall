@@ -24,7 +24,7 @@ export class WaterfallChartComponent implements OnInit {
 
   ngOnInit() {
 
-    console.log(this.claimsJsonData);
+    // console.log(this.claimsJsonData);
     this.getChartData();
 
   }
