@@ -41,7 +41,7 @@ export class ClaimsData {
     private claimsAggregateDataTotal: any;
     private claimsWaterfallChartData: any[];
 
-    private temp: any[];
+    private testWaterfall: any[];
 
 
 
@@ -176,6 +176,9 @@ export class ClaimsData {
 
         this.claimsAggregateDataTotal = total;
 
+
+        // begin populate claimsWaterfallChartData
+
         this.claimWaterfallChartPrevYearData = {
             key: 'PREYEAR',
             Base: 0,
@@ -192,21 +195,12 @@ export class ClaimsData {
             Per_Capita: total.currYearPerCapitalClaimCost
         };
 
-
-        // claimsWaterfallChartData
-
-        // console.log(this.claimWaterfallChartPrevYearData , this.claimWaterfallChartCurrYearData);
-
-
-        console.log(this.claimsAggregateData);
-
-        this.temp = new Array();
-
+        this.claimsWaterfallChartData = new Array();
 
         ClaimsData.UK_ConditionGrouping.forEach(element => {
             const item = this.claimsAggregateData.filter((val) => val.key === element);
             if (item) {
-                this.temp.push({
+                this.claimsWaterfallChartData.push({
                     key: item[0].key,
                     Base: 0,
                     Fall: 0,
@@ -214,7 +208,7 @@ export class ClaimsData {
                     Per_Capita: item[0].currYearPerCapitalClaimCost - item[0].prevYearPerCapitalClaimCost
                 });
             } else {
-                this.temp.push({
+                this.claimsWaterfallChartData.push({
                     key: element,
                     Base: 0,
                     Fall: 0,
@@ -225,11 +219,10 @@ export class ClaimsData {
         });
 
 
-
         // begine calculate base, rise , fall
         let prev = this.claimWaterfallChartPrevYearData;
 
-        this.temp.forEach(element => {
+        this.claimsWaterfallChartData.forEach(element => {
             element.Fall = element.Per_Capita <= 0 ? -element.Per_Capita : 0;
             element.Rise = element.Per_Capita > 0 ? element.Per_Capita : 0;
             element.Base = prev.Base + prev.Rise - element.Fall;
@@ -237,10 +230,13 @@ export class ClaimsData {
         });
 
 
-        this.temp.forEach(element => {
-            console.log(element);
-        });
+        this.claimsWaterfallChartData.unshift(this.claimWaterfallChartPrevYearData);
+        this.claimsWaterfallChartData.push(this.claimWaterfallChartCurrYearData);
 
+
+        // this.claimsWaterfallChartData.forEach(element => {
+        //     console.log(element);
+        // });
 
 
         // testing fake data
@@ -260,7 +256,6 @@ export class ClaimsData {
             { key: 'Other', Base: 0, Fall: 0, Rise: 0, Per_Capita: 251.76 },
         ];
         let prevItem = prevYear;
-
         conditionGroup.forEach(element => {
             element.Fall = element.Per_Capita <= 0 ? -element.Per_Capita : 0;
             element.Rise = element.Per_Capita > 0 ? element.Per_Capita : 0;
@@ -268,9 +263,10 @@ export class ClaimsData {
             prevItem = element;
         });
 
+        conditionGroup.unshift(prevYear);
+        conditionGroup.push(currYear);
 
-
-
+        this.testWaterfall = conditionGroup;
 
         // validation
         // const sum = this.temp.reduce((prev, curr) => (prev + curr.Per_Capita), 0);
@@ -290,10 +286,6 @@ export class ClaimsData {
 
         // console.log('after sort');
         // console.log(this.temp);
-
-
-
-
 
     }
 
@@ -336,4 +328,10 @@ export class ClaimsData {
         return this.claimsWaterfallChartData;
     }
 
+
+    // to be delete
+
+    getWaterfallTestData(): any[] {
+        return this.testWaterfall;
+    }
 }
