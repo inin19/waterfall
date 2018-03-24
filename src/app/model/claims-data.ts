@@ -1,6 +1,5 @@
 import * as crossfilter from 'crossfilter2';
 import { ClaimDataService } from '../service/claim-data.service';
-import * as jp from 'jsonpath';
 
 export class ClaimsData {
 
@@ -149,13 +148,13 @@ export class ClaimsData {
 
         // adding TOTAL value
 
-        const total_currYearClaimCount_sum = this.claimsAggregateData.reduce((prev, curr) => (prev + curr.value.currYearClaimCount_sum), 0);
-        const total_prevYearClaimCount_sum = this.claimsAggregateData.reduce((prev, curr) => (prev + curr.value.prevYearClaimCount_sum), 0);
+        const total_currYearClaimCount_sum = this.claimsAggregateData.reduce((pre, curr) => (pre + curr.value.currYearClaimCount_sum), 0);
+        const total_prevYearClaimCount_sum = this.claimsAggregateData.reduce((pre, curr) => (pre + curr.value.prevYearClaimCount_sum), 0);
 
         // tslint:disable-next-line:max-line-length
-        const total_currYeartotalClaimCostAmount_sum = this.claimsAggregateData.reduce((prev, curr) => (prev + curr.value.currYeartotalClaimCostAmount_sum), 0);
+        const total_currYeartotalClaimCostAmount_sum = this.claimsAggregateData.reduce((pre, curr) => (pre + curr.value.currYeartotalClaimCostAmount_sum), 0);
         // tslint:disable-next-line:max-line-length
-        const total_prevYeartotalClaimCostAmount_sum = this.claimsAggregateData.reduce((prev, curr) => (prev + curr.value.prevYeartotalClaimCostAmount_sum), 0);
+        const total_prevYeartotalClaimCostAmount_sum = this.claimsAggregateData.reduce((pre, curr) => (pre + curr.value.prevYeartotalClaimCostAmount_sum), 0);
 
         const value = {
             'currYearClaimCount_sum': total_currYearClaimCount_sum,
@@ -203,6 +202,7 @@ export class ClaimsData {
 
         this.temp = new Array();
 
+
         ClaimsData.UK_ConditionGrouping.forEach(element => {
             const item = this.claimsAggregateData.filter((val) => val.key === element);
             if (item) {
@@ -223,6 +223,54 @@ export class ClaimsData {
                 });
             }
         });
+
+
+
+        // begine calculate base, rise , fall
+        let prev = this.claimWaterfallChartPrevYearData;
+
+        this.temp.forEach(element => {
+            element.Fall = element.Per_Capita <= 0 ? -element.Per_Capita : 0;
+            element.Rise = element.Per_Capita > 0 ? element.Per_Capita : 0;
+            element.Base = prev.Base + prev.Rise - element.Fall;
+            prev = element;
+        });
+
+
+        this.temp.forEach(element => {
+            console.log(element);
+        });
+
+
+
+        // testing fake data
+
+        const prevYear = { key: '2015', Base: 0, Fall: 0, Rise: 8655.79, Per_Capita: 8655.79 };
+        const currYear = { key: '2016', Base: 0, Fall: 0, Rise: 8963.31, Per_Capita: 8963.31 };
+        const conditionGroup = [
+            { key: 'Circulatory', Base: 0, Fall: 0, Rise: 0, Per_Capita: -16.11 },
+            { key: 'Digestive', Base: 0, Fall: 0, Rise: 0, Per_Capita: 16.27 },
+            { key: 'Injury & Accident', Base: 0, Fall: 0, Rise: 0, Per_Capita: -163.90 },
+            { key: 'Mental Disorders', Base: 0, Fall: 0, Rise: 0, Per_Capita: -174.91 },
+            { key: 'Musculoskeletal', Base: 0, Fall: 0, Rise: 0, Per_Capita: 103.97 },
+            { key: 'Neoplasms', Base: 0, Fall: 0, Rise: 0, Per_Capita: 228.08 },
+            { key: 'Pregnancy', Base: 0, Fall: 0, Rise: 0, Per_Capita: -16.23 },
+            { key: 'Respiratory', Base: 0, Fall: 0, Rise: 0, Per_Capita: 109.99 },
+            { key: 'SS & IDC', Base: 0, Fall: 0, Rise: 0, Per_Capita: -31.39 },
+            { key: 'Other', Base: 0, Fall: 0, Rise: 0, Per_Capita: 251.76 },
+        ];
+        let prevItem = prevYear;
+
+        conditionGroup.forEach(element => {
+            element.Fall = element.Per_Capita <= 0 ? -element.Per_Capita : 0;
+            element.Rise = element.Per_Capita > 0 ? element.Per_Capita : 0;
+            element.Base = prevItem.Base + prevItem.Rise - element.Fall;
+            prevItem = element;
+        });
+
+
+
+
 
         // validation
         // const sum = this.temp.reduce((prev, curr) => (prev + curr.Per_Capita), 0);
