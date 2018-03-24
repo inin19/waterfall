@@ -49,6 +49,8 @@ export class ClaimsData {
 
 
 
+
+
     constructor(claimData: any[], totalMemeberCount: any[]) {
 
         this.createDimensionGroup(claimData);
@@ -193,20 +195,22 @@ export class ClaimsData {
 
         // console.log(this.claimWaterfallChartPrevYearData, this.claimWaterfallChartCurrYearData);
 
-        this.temp = [
-            { key: 'a', value: 4 },
-            { key: 'b', value: 2 },
-            { key: 'c', value: 6 },
-            { key: 'd', value: 5 }
-        ];
+        // this.temp = [
+        //     { key: 'a', value: 4 },
+        //     { key: 'b', value: 2 },
+        //     { key: 'c', value: 6 },
+        //     { key: 'd', value: 5 }
+        // ];
 
-        console.log('before sort');
-        console.log(this.temp);
+        // console.log('before sort');
+        // console.log(this.temp);
 
-        this.temp.sort((a, b) => a.value - b.value);
+        // this.temp.sort((a, b) => a.value - b.value);
 
-        console.log('after sort');
-        console.log(this.temp);
+        // console.log('after sort');
+        // console.log(this.temp);
+
+
 
 
 
