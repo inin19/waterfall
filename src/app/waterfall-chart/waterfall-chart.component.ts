@@ -41,7 +41,7 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
     // console.log(this.claimsJsonData);
     this.getChartData();
     this.createChart();
-    this.updateChart();
+    this.updateChart(this.claimsJsonData);
 
   }
 
@@ -124,7 +124,7 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
       .attr('transform', 'rotate(-45)');
   }
 
-  updateChart() {
+  updateChart(claimsJsonData: any[]) {
 
   }
 
