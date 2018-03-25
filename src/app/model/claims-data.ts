@@ -174,6 +174,7 @@ export class ClaimsData {
         this.claimsAggregateDataTotal = total;
 
 
+
         // begin populate claimsWaterfallChartData
         this.waterfallPrevYearData = {
             key: 'PREYEAR',
@@ -255,24 +256,6 @@ export class ClaimsData {
         this.waterfallPrevYearData = prevYear;
         this.waterfallCurrYearData = currYear;
 
-        // validation
-        // const sum = this.temp.reduce((prev, curr) => (prev + curr.Per_Capita), 0);
-
-
-        // this.temp = [
-        //     { key: 'a', value: 4 },
-        //     { key: 'b', value: 2 },
-        //     { key: 'c', value: 6 },
-        //     { key: 'd', value: 5 }
-        // ];
-
-        // console.log('before sort');
-        // console.log(this.temp);
-
-        // this.temp.sort((a, b) => a.value - b.value);
-
-        // console.log('after sort');
-        // console.log(this.temp);
 
     }
 
