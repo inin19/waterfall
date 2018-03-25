@@ -41,12 +41,13 @@ export class WaterfallChartComponent implements OnInit {
 
 
     // console.log(this.benchmarkClaimData.getWaterfallPrevYearData());
-    console.log(this.benchmarkClaimData.getWaterfallConditionGroupData());
+    // console.log(this.benchmarkClaimData.getWaterfallConditionGroupData());
     // console.log(this.benchmarkClaimData.getWaterfallCurrYearData());
 
-    this.benchmarkClaimData.sortWaterfallASC();
-    this.benchmarkClaimData.sortWaterfallDESC();
-    this.benchmarkClaimData.restoreWaterfallOrder();
+    // this.benchmarkClaimData.sortWaterfallASC();
+    // this.benchmarkClaimData.sortWaterfallDESC();
+    // this.benchmarkClaimData.restoreWaterfallOrder();
+
 
 
 

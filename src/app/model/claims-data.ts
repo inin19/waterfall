@@ -353,13 +353,7 @@ export class ClaimsData {
     }
 
     getWaterfallMinBaseValue(): number {
-        const min = this.waterfallConditionGroupData.reduce((accumulator, curr) => {
-
-            return curr.Base < accumulator.Base ? curr : accumulator;
-
-        });
-
-
+        const min = this.waterfallConditionGroupData.reduce((accumulator, curr) => curr.Base < accumulator.Base ? curr : accumulator);
         return min.Base;
     }
 
