@@ -21,7 +21,7 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
 
 
   // d3 related variables
-  private margin: any = { top: 60, right: 20, bottom: 30, left: 20 };
+  private margin: any = { top: 60, right: 20, bottom: 80, left: 40 };
   private chart: any;
   private width: number;
   private height: number;
@@ -41,6 +41,7 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
     // console.log(this.claimsJsonData);
     this.getChartData();
     this.createChart();
+    this.updateChart();
 
   }
 
@@ -99,6 +100,31 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
       .domain([0, this.benchmarkClaimData.getGraphMaxValue()])
       .range([this.height, 0]);
 
+    // x & y axis
+    const xaxis = d3.axisBottom(this.xScale)
+      .tickSizeOuter(0);
+
+    const yaxis = d3.axisLeft(this.yScale)
+      .tickSizeOuter(0)
+      .tickFormat(d3.format('.2s'));
+
+    this.xAxis = this.chart.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', `translate(0, ${this.height})`)
+      .call(xaxis);
+
+    this.yAxis = this.chart.append('g')
+      .attr('class', 'y axis')
+      .call(yaxis);
+
+    d3.select('.x.axis').selectAll('text')
+      .style('text-anchor', 'end')
+      .attr('dx', '-.8em')
+      .attr('dy', '.15em')
+      .attr('transform', 'rotate(-45)');
+  }
+
+  updateChart() {
 
   }
 
