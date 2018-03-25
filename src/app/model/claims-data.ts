@@ -16,6 +16,20 @@ export class ClaimsData {
         'CONDITION_GROUPING_SS_&_IDC'
     ];
 
+    static UK_ConditionGroupingTEST = [
+        'Circulatory',
+        'Digestive',
+        'Injury & Accident',
+        'Mental Disorders',
+        'Musculoskeletal',
+        'Neoplasms',
+        'Pregnancy',
+        'Respiratory',
+        'SS & IDC',
+        'Other'
+    ];
+
+
     private ndx: crossfilter.Crossfilter<any>;
     // dimensions
     private relationDimension: crossfilter.Dimension<any, any>;
@@ -328,6 +342,17 @@ export class ClaimsData {
     sortWaterfallDESC(): void {
         this.waterfallConditionGroupData.sort((a, b) => b.Per_Capita - a.Per_Capita);
         this.calculateWaterfallBaseFallRise();
+    }
+
+    restoreWaterfallOrder(): void {
+        this.waterfallConditionGroupData.sort((a, b) =>
+            ClaimsData.UK_ConditionGroupingTEST.indexOf(a.key) > ClaimsData.UK_ConditionGroupingTEST.indexOf(b.key) ? 1 : -1);
+        this.calculateWaterfallBaseFallRise();
+
+    }
+
+    getWaterfallMinBaseValue(): number {
+        return this.waterfallConditionGroupData.reduce((prev, curr) => prev.Base < curr.Base ? prev.Base : curr.Base);
     }
 
 
