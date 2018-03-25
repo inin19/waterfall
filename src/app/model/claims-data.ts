@@ -1,5 +1,6 @@
 import * as crossfilter from 'crossfilter2';
 import { ClaimDataService } from '../service/claim-data.service';
+import { max } from 'd3';
 
 export class ClaimsData {
 
@@ -352,7 +353,14 @@ export class ClaimsData {
     }
 
     getWaterfallMinBaseValue(): number {
-        return this.waterfallConditionGroupData.reduce((prev, curr) => prev.Base < curr.Base ? prev.Base : curr.Base);
+        const min = this.waterfallConditionGroupData.reduce((accumulator, curr) => {
+
+            return curr.Base < accumulator.Base ? curr : accumulator;
+
+        });
+
+
+        return min.Base;
     }
 
 
