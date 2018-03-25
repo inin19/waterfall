@@ -27,7 +27,7 @@ export class WaterfallChartComponent implements OnInit {
     // console.log(this.claimsJsonData);
     this.getChartData();
 
-    this.testReduce();
+    // this.testReduce();
 
   }
 

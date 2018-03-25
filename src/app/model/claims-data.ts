@@ -143,36 +143,42 @@ export class ClaimsData {
         });
 
 
+        console.log(this.claimsAggregateData);
+
         // adding TOTAL value
 
-        const total_currYearClaimCount_sum = this.claimsAggregateData.reduce((pre, curr) => (pre + curr.value.currYearClaimCount_sum), 0);
-        const total_prevYearClaimCount_sum = this.claimsAggregateData.reduce((pre, curr) => (pre + curr.value.prevYearClaimCount_sum), 0);
+        this.claimsAggregateDataTotal = this.claimsAggregateData.reduce((accumulator, currVal) => {
+            return {
+                key: 'TOTAL',
+                value: {
+                    currYearClaimCount_sum: accumulator.value.currYearClaimCount_sum + currVal.value.currYearClaimCount_sum,
+                    currYeartotalClaimCostAmount_sum: accumulator.value.currYeartotalClaimCostAmount_sum + currVal.value.currYeartotalClaimCostAmount_sum,
+                    prevYearClaimCount_sum: accumulator.value.prevYearClaimCount_sum + currVal.value.prevYearClaimCount_sum,
+                    prevYeartotalClaimCostAmount_sum: accumulator.value.prevYeartotalClaimCostAmount_sum + currVal.value.prevYeartotalClaimCostAmount_sum
+                }
+            };
+        }, {
+                key: 'TOTAL',
+                value: {
+                    currYearClaimCount_sum: 0,
+                    currYeartotalClaimCostAmount_sum: 0,
+                    prevYearClaimCount_sum: 0,
+                    prevYeartotalClaimCostAmount_sum: 0
+                }
+            });
 
-        // tslint:disable-next-line:max-line-length
-        const total_currYeartotalClaimCostAmount_sum = this.claimsAggregateData.reduce((pre, curr) => (pre + curr.value.currYeartotalClaimCostAmount_sum), 0);
-        // tslint:disable-next-line:max-line-length
-        const total_prevYeartotalClaimCostAmount_sum = this.claimsAggregateData.reduce((pre, curr) => (pre + curr.value.prevYeartotalClaimCostAmount_sum), 0);
 
-        const value = {
-            'currYearClaimCount_sum': total_currYearClaimCount_sum,
-            'prevYearClaimCount_sum': total_prevYearClaimCount_sum,
-            'currYeartotalClaimCostAmount_sum': total_currYeartotalClaimCostAmount_sum,
-            'prevYeartotalClaimCostAmount_sum': total_prevYeartotalClaimCostAmount_sum
-        };
+        this.claimsAggregateDataTotal.currYearClaimFrequency = this.claimsAggregateDataTotal.value.currYearClaimCount_sum / currYearMemeberCount;
+        this.claimsAggregateDataTotal.prevYearClaimFrequency = this.claimsAggregateDataTotal.value.prevYearClaimCount_sum / prevYearMemeberCount;
 
-        const total = {
-            'key': 'TOTAL',
-            'value': value,
-            'currYearClaimFrequency': this.claimsAggregateData.reduce((pre, curr) => (pre + curr.currYearClaimFrequency), 0),
-            'prevYearClaimFrequency': this.claimsAggregateData.reduce((pre, curr) => (pre + curr.prevYearClaimFrequency), 0),
-            'currYearPerCapitalClaimCost': this.claimsAggregateData.reduce((pre, curr) => (pre + curr.currYearPerCapitalClaimCost), 0),
-            'prevYearPerCapitalClaimCost': this.claimsAggregateData.reduce((pre, curr) => (pre + curr.prevYearPerCapitalClaimCost), 0),
-            'currYearAvgClaimCost': value.currYeartotalClaimCostAmount_sum / value.currYearClaimCount_sum,
-            'prevYearAvgClaimCost': value.prevYeartotalClaimCostAmount_sum / value.prevYearClaimCount_sum
-        };
+        this.claimsAggregateDataTotal.currYearPerCapitalClaimCost = this.claimsAggregateDataTotal.value.currYeartotalClaimCostAmount_sum / currYearMemeberCount;
+        this.claimsAggregateDataTotal.prevYearPerCapitalClaimCost = this.claimsAggregateDataTotal.value.prevYeartotalClaimCostAmount_sum / prevYearMemeberCount;
 
-        this.claimsAggregateDataTotal = total;
+        this.claimsAggregateDataTotal.currYearAvgClaimCost = this.claimsAggregateDataTotal.value.currYeartotalClaimCostAmount_sum / this.claimsAggregateDataTotal.value.currYearClaimCount_sum;
+        this.claimsAggregateDataTotal.prevYearAvgClaimCost = this.claimsAggregateDataTotal.value.prevYeartotalClaimCostAmount_sum / this.claimsAggregateDataTotal.value.prevYearClaimCount_sum;
 
+
+        console.log(this.claimsAggregateDataTotal);
 
 
         // begin populate claimsWaterfallChartData
@@ -180,16 +186,16 @@ export class ClaimsData {
             key: 'PREYEAR',
             Base: 0,
             Fall: 0,
-            Rise: total.prevYearPerCapitalClaimCost,
-            Per_Capita: total.prevYearPerCapitalClaimCost
+            Rise: this.claimsAggregateDataTotal.prevYearPerCapitalClaimCost,
+            Per_Capita: this.claimsAggregateDataTotal.prevYearPerCapitalClaimCost
         };
 
         this.waterfallCurrYearData = {
             key: 'CURRYEAR',
             Base: 0,
             Fall: 0,
-            Rise: total.currYearPerCapitalClaimCost,
-            Per_Capita: total.currYearPerCapitalClaimCost
+            Rise: this.claimsAggregateDataTotal.currYearPerCapitalClaimCost,
+            Per_Capita: this.claimsAggregateDataTotal.currYearPerCapitalClaimCost
         };
 
         this.waterfallConditionGroupData = new Array();
@@ -218,13 +224,6 @@ export class ClaimsData {
 
         this.calculateWaterfallBaseFallRise();
 
-        // this.claimsWaterfallChartData.unshift(this.claimWaterfallChartPrevYearData);
-        // this.claimsWaterfallChartData.push(this.claimWaterfallChartCurrYearData);
-
-
-        // this.claimsWaterfallChartData.forEach(element => {
-        //     console.log(element);
-        // });
 
 
         // testing fake data
