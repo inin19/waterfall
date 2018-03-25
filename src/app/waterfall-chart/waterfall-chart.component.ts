@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, ViewChild, Input, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, Input, ElementRef, ViewEncapsulation, HostListener } from '@angular/core';
 import { ClaimsData } from '../model/claims-data';
 
 import * as d3 from 'd3';
@@ -9,37 +9,54 @@ import * as d3 from 'd3';
   templateUrl: './waterfall-chart.component.html',
   styleUrls: ['./waterfall-chart.component.css']
 })
-export class WaterfallChartComponent implements OnInit {
-
+export class WaterfallChartComponent implements OnInit, OnChanges {
+  @ViewChild('claimsWaterfall') private chartContainer: ElementRef;
 
   @Input() private claimsJsonData: any[];
   @Input() private totalMemberCount: any[];
 
-
   private benchmarkClaimData: ClaimsData;
+  private benchmarkConditionGroupData: any[];
+  private benchmarkGraphData: any[];
+
+
+  // d3 related variables
+  private margin: any = { top: 60, right: 20, bottom: 30, left: 20 };
+  private chart: any;
+  private width: number;
+  private height: number;
+  private xScale: any;
+  private yScale: any;
+  private xAxis: any;
+  private yAxis: any;
+  private svg: any;
+
+
 
 
 
   constructor() { }
 
   ngOnInit() {
-
     // console.log(this.claimsJsonData);
     this.getChartData();
+    this.createChart();
 
-    // this.testReduce();
+  }
 
+  ngOnChanges() {
+    if (this.chart) {
+      console.log('ngChange');
+    }
   }
 
   getChartData() {
     this.benchmarkClaimData = new ClaimsData(this.claimsJsonData, this.totalMemberCount);
-
+    this.benchmarkConditionGroupData = this.benchmarkClaimData.getConditionGroupDataCombined();
+    this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
 
     // this.benchmarkClaimData.processGraphData(this.totalMemberCount,
     //   ['REGION_CENTRAL_LONDON', 'REGION_GREATER_LONDON'], undefined, ['F'], ['CLAIM_TYPE_DAYCARE', 'CLAIM_TYPE_IN_PATIENT']);
-
-    const benchmarkClaimDataAndTotal =
-      this.benchmarkClaimData.getClaimsAggregateData().concat(this.benchmarkClaimData.getClaimsAggregateDataTotal());
 
 
     // console.log(this.benchmarkClaimData.getWaterfallPrevYearData());
@@ -50,38 +67,39 @@ export class WaterfallChartComponent implements OnInit {
     // this.benchmarkClaimData.sortWaterfallDESC();
     // this.benchmarkClaimData.restoreWaterfallOrder();
 
-
-
-
-  }
-
-  testReduce() {
-    const abc = [
-      { key: 'Circulatory', currYearClaimFrequency: 1, currYearPerCapitalClaimCost: 10, currYearAvgClaimCost: 100 },
-      { key: 'Digestive', currYearClaimFrequency: 2, currYearPerCapitalClaimCost: 20, currYearAvgClaimCost: 200 },
-      { key: 'Injury & Accident', currYearClaimFrequency: 3, currYearPerCapitalClaimCost: 30, currYearAvgClaimCost: 300 },
-      { key: 'Mental Disorders', currYearClaimFrequency: 4, currYearPerCapitalClaimCost: 40, currYearAvgClaimCost: 400 },
-      { key: 'Musculoskeletal', currYearClaimFrequency: 5, currYearPerCapitalClaimCost: 50, currYearAvgClaimCost: 500 },
-      { key: 'Neoplasms', currYearClaimFrequency: 6, currYearPerCapitalClaimCost: 60, currYearAvgClaimCost: 600 },
-      { key: 'Pregnancy', currYearClaimFrequency: 7, currYearPerCapitalClaimCost: 70, currYearAvgClaimCost: 700 },
-      { key: 'Respiratory', currYearClaimFrequency: 8, currYearPerCapitalClaimCost: 80, currYearAvgClaimCost: 800 },
-      { key: 'SS & IDC', currYearClaimFrequency: 9, currYearPerCapitalClaimCost: 90, currYearAvgClaimCost: 900 },
-      { key: 'Other', currYearClaimFrequency: 10, currYearPerCapitalClaimCost: 100, currYearAvgClaimCost: 1000 }];
-
-
-    const d = abc.reduce((accu, curr) => {
-      return {
-        key: 'total',
-        currYearClaimFrequency: accu.currYearClaimFrequency + curr.currYearClaimFrequency,
-        currYearPerCapitalClaimCost: accu.currYearPerCapitalClaimCost + curr.currYearPerCapitalClaimCost,
-        currYearAvgClaimCost: accu.currYearAvgClaimCost + curr.currYearAvgClaimCost
-      };
-    }, { key: 'total', currYearClaimFrequency: 0, currYearPerCapitalClaimCost: 0, currYearAvgClaimCost: 0 });
-    console.log(d);
-
   }
 
 
+  createChart() {
+    const htmlElement = this.chartContainer.nativeElement;
+    this.width = htmlElement.offsetWidth - this.margin.left - this.margin.right;
+    this.height = htmlElement.offsetHeight - this.margin.top - this.margin.bottom;
 
+
+    this.svg = d3.select('#claimsWaterfall').append('svg')
+      .attr('width', htmlElement.offsetWidth)
+      .attr('height', htmlElement.offsetHeight);
+
+
+    this.chart = this.svg
+      .append('g')
+      .classed('bars', true)
+      .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+
+
+    // console.log(this.benchmarkClaimData.getGraphMaxValue());
+
+    // create scales
+    this.xScale = d3.scaleBand()
+      .domain(this.benchmarkClaimData.getGraphData()[0].map(val => (val.data.key)))
+      .rangeRound([0, this.width])
+      .padding(0.2);
+
+    this.yScale = d3.scaleLinear()
+      .domain([0, this.benchmarkClaimData.getGraphMaxValue()])
+      .range([this.height, 0]);
+
+
+  }
 
 }
