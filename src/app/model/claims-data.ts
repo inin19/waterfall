@@ -31,30 +31,22 @@ export class ClaimsData {
 
     private conditionGroupingDimensionGroup: crossfilter.Group<any, any, any>;
 
-    private claimWaterfallChartPrevYearData: any;
-    private claimWaterfallChartCurrYearData: any;
 
 
 
     // output
     private claimsAggregateData: any[];
     private claimsAggregateDataTotal: any;
-    private claimsWaterfallChartData: any[];
+    private waterfallConditionGroupData: any[];
 
-    private testWaterfall: any[];
-
-
-
-
-
+    private waterfallPrevYearData: any;
+    private waterfallCurrYearData: any;
 
 
 
     constructor(claimData: any[], totalMemeberCount: any[]) {
-
         this.createDimensionGroup(claimData);
         this.processGraphData(totalMemeberCount);
-
     }
 
 
@@ -124,14 +116,6 @@ export class ClaimsData {
         const currYearMemeberCount = totalMemeberCount.filter((d) => d.year === 'currentYear')[0].memeberCount;
         const prevYearMemeberCount = totalMemeberCount.filter((d) => d.year === 'previousYear')[0].memeberCount;
 
-
-        // console.log(curYearMemeberCount);
-        //        console.log(preYearMemeberCount);
-
-
-
-        // this.temp = this.claimsAggregateData;
-
         this.claimsAggregateData.forEach(element => {
             element.currYearClaimFrequency = element.value.currYearClaimCount_sum / currYearMemeberCount;
             element.prevYearClaimFrequency = element.value.prevYearClaimCount_sum / prevYearMemeberCount;
@@ -142,8 +126,6 @@ export class ClaimsData {
             element.currYearAvgClaimCost = element.value.currYeartotalClaimCostAmount_sum / element.value.currYearClaimCount_sum;
             element.prevYearAvgClaimCost = element.value.prevYeartotalClaimCostAmount_sum / element.value.prevYearClaimCount_sum;
         });
-
-
 
 
         // adding TOTAL value
@@ -178,8 +160,7 @@ export class ClaimsData {
 
 
         // begin populate claimsWaterfallChartData
-
-        this.claimWaterfallChartPrevYearData = {
+        this.waterfallPrevYearData = {
             key: 'PREYEAR',
             Base: 0,
             Fall: 0,
@@ -187,7 +168,7 @@ export class ClaimsData {
             Per_Capita: total.prevYearPerCapitalClaimCost
         };
 
-        this.claimWaterfallChartCurrYearData = {
+        this.waterfallCurrYearData = {
             key: 'CURRYEAR',
             Base: 0,
             Fall: 0,
@@ -195,12 +176,12 @@ export class ClaimsData {
             Per_Capita: total.currYearPerCapitalClaimCost
         };
 
-        this.claimsWaterfallChartData = new Array();
+        this.waterfallConditionGroupData = new Array();
 
         ClaimsData.UK_ConditionGrouping.forEach(element => {
             const item = this.claimsAggregateData.filter((val) => val.key === element);
             if (item) {
-                this.claimsWaterfallChartData.push({
+                this.waterfallConditionGroupData.push({
                     key: item[0].key,
                     Base: 0,
                     Fall: 0,
@@ -208,7 +189,7 @@ export class ClaimsData {
                     Per_Capita: item[0].currYearPerCapitalClaimCost - item[0].prevYearPerCapitalClaimCost
                 });
             } else {
-                this.claimsWaterfallChartData.push({
+                this.waterfallConditionGroupData.push({
                     key: element,
                     Base: 0,
                     Fall: 0,
@@ -219,19 +200,10 @@ export class ClaimsData {
         });
 
 
-        // begine calculate base, rise , fall
-        let prev = this.claimWaterfallChartPrevYearData;
+        this.calculateWaterfallBaseFallRise();
 
-        this.claimsWaterfallChartData.forEach(element => {
-            element.Fall = element.Per_Capita <= 0 ? -element.Per_Capita : 0;
-            element.Rise = element.Per_Capita > 0 ? element.Per_Capita : 0;
-            element.Base = prev.Base + prev.Rise - element.Fall;
-            prev = element;
-        });
-
-
-        this.claimsWaterfallChartData.unshift(this.claimWaterfallChartPrevYearData);
-        this.claimsWaterfallChartData.push(this.claimWaterfallChartCurrYearData);
+        // this.claimsWaterfallChartData.unshift(this.claimWaterfallChartPrevYearData);
+        // this.claimsWaterfallChartData.push(this.claimWaterfallChartCurrYearData);
 
 
         // this.claimsWaterfallChartData.forEach(element => {
@@ -263,10 +235,10 @@ export class ClaimsData {
             prevItem = element;
         });
 
-        conditionGroup.unshift(prevYear);
-        conditionGroup.push(currYear);
-
-        this.testWaterfall = conditionGroup;
+        // TO BE REMOVED
+        this.waterfallConditionGroupData = conditionGroup;
+        this.waterfallPrevYearData = prevYear;
+        this.waterfallCurrYearData = currYear;
 
         // validation
         // const sum = this.temp.reduce((prev, curr) => (prev + curr.Per_Capita), 0);
@@ -287,6 +259,17 @@ export class ClaimsData {
         // console.log('after sort');
         // console.log(this.temp);
 
+    }
+
+    calculateWaterfallBaseFallRise() {
+        let prev = this.waterfallPrevYearData;
+
+        this.waterfallConditionGroupData.forEach(element => {
+            element.Fall = element.Per_Capita <= 0 ? -element.Per_Capita : 0;
+            element.Rise = element.Per_Capita > 0 ? element.Per_Capita : 0;
+            element.Base = prev.Base + prev.Rise - element.Fall;
+            prev = element;
+        });
     }
 
     reduceAdd = (p, v) => {
@@ -313,8 +296,7 @@ export class ClaimsData {
         };
     }
 
-    // getA
-
+    // getAggregate
     getClaimsAggregateData(): any[] {
         return this.claimsAggregateData;
     }
@@ -324,14 +306,29 @@ export class ClaimsData {
         return this.claimsAggregateDataTotal;
     }
 
-    getClaimsWaterfallChartData(): any[] {
-        return this.claimsWaterfallChartData;
+    getWaterfallConditionGroupData(): any[] {
+        return this.waterfallConditionGroupData;
+    }
+
+    getWaterfallPrevYearData(): any[] {
+        return this.waterfallPrevYearData;
+    }
+
+    getWaterfallCurrYearData(): any[] {
+        return this.waterfallCurrYearData;
+    }
+
+    sortWaterfallASC(): void {
+        // this.temp.sort((a, b) => a.value - b.value);
+        this.waterfallConditionGroupData.sort((a, b) => a.Per_Capita - b.Per_Capita);
+        // recalculate base, fall, rise
+        this.calculateWaterfallBaseFallRise();
+    }
+
+    sortWaterfallDESC(): void {
+        this.waterfallConditionGroupData.sort((a, b) => b.Per_Capita - a.Per_Capita);
+        this.calculateWaterfallBaseFallRise();
     }
 
 
-    // to be delete
-
-    getWaterfallTestData(): any[] {
-        return this.testWaterfall;
-    }
 }

@@ -40,7 +40,15 @@ export class WaterfallChartComponent implements OnInit {
       this.benchmarkClaimData.getClaimsAggregateData().concat(this.benchmarkClaimData.getClaimsAggregateDataTotal());
 
 
-    // console.log(benchmarkClaimDataAndTotal);
+    // console.log(this.benchmarkClaimData.getWaterfallPrevYearData());
+    // console.log(this.benchmarkClaimData.getWaterfallConditionGroupData());
+    // console.log(this.benchmarkClaimData.getWaterfallCurrYearData());
+
+
+    this.benchmarkClaimData.sortWaterfallASC();
+
+    this.benchmarkClaimData.sortWaterfallDESC();
+
 
   }
 
