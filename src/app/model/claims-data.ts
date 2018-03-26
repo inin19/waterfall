@@ -368,7 +368,20 @@ export class ClaimsData {
         this.conditionGroupData.sort((a, b) =>
             ClaimsData.UK_ConditionGroupingTEST.indexOf(a.key) > ClaimsData.UK_ConditionGroupingTEST.indexOf(b.key) ? 1 : -1);
         this.calculateWaterfallBaseFallRise();
+    }
 
+    sortConditionGroupData(method: string) {
+
+        switch (method) {
+            case 'Asc': this.conditionGroupData.sort((a, b) => a.Per_Capita - b.Per_Capita);
+                break;
+            case 'Desc': this.conditionGroupData.sort((a, b) => b.Per_Capita - a.Per_Capita);
+                break;
+            default:
+                this.conditionGroupData.sort((a, b) =>
+                    ClaimsData.UK_ConditionGroupingTEST.indexOf(a.key) > ClaimsData.UK_ConditionGroupingTEST.indexOf(b.key) ? 1 : -1);
+        }
+        this.calculateWaterfallBaseFallRise();
     }
 
     getWaterfallMinBaseValue(): number {

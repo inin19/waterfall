@@ -1,12 +1,31 @@
-<div id='sortingMethod'>
-    <input type="radio" id="ASC" name="sorting">
-    <label for="Choice1">ASC</label>
+<div class="form-group radio">
 
-    <input type="radio" id="DESC" name="sorting">
-    <label for="Choice2">DESC</label>
+    <!-- <form #f="ngForm">
+        <label>
+            <input type="radio" name="sorting" value="ASC" [(ngModel)]="benchmarkOrder"> ASC
+        </label>
+        <label>
+            <input type="radio" name="sorting" value="DESC" [(ngModel)]="benchmarkOrder"> DESC
+        </label>
+        <label>
+            <input type="radio" name="sorting" value="Default" [(ngModel)]="benchmarkOrder"> Default
+        </label>
 
-    <input type="radio" id="Default" name="sorting" checked>
-    <label for="Choice3">Default</label>
+    </form> -->
+
+
+    <form [formGroup]="form">
+        <label class="center-block">
+            <input type="radio" formControlName="sorting" value="Asc"> Asc
+        </label>
+        <label class="center-block">
+            <input type="radio" formControlName="sorting" value="Desc"> Desc
+        </label>
+        <label class="center-block">
+            <input type="radio" formControlName="sorting" value="Default"> Default
+        </label>
+    </form>
+
 </div>
 
 <div id='claimsWaterfall' #claimsWaterfall>

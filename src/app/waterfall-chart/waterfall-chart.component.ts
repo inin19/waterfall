@@ -1,5 +1,6 @@
 import { Component, OnInit, OnChanges, ViewChild, Input, ElementRef, ViewEncapsulation, HostListener } from '@angular/core';
 import { ClaimsData } from '../model/claims-data';
+import { FormControl, FormGroup } from '@angular/forms';
 
 import * as d3 from 'd3';
 
@@ -21,6 +22,7 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
   @Input() private claimsJsonData: any[];
   @Input() private totalMemberCount: any[];
 
+
   private benchmarkClaimData: ClaimsData;
   private benchmarkConditionGroupData: any[];
   private benchmarkGraphData: any[];
@@ -38,17 +40,37 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
   private svg: any;
 
 
+  // form related
+  benchmarkOrder = 'Default';
+  form: FormGroup;
 
 
 
   constructor() { }
 
   ngOnInit() {
+
+    this.form = new FormGroup({
+      sorting: new FormControl('Default'),
+    });
+
+    this.onFormChanges();
+
     // console.log(this.claimsJsonData);
     this.updateChartData();
     this.createChart();
     this.updateChart(this.claimsJsonData);
 
+  }
+
+  onFormChanges() {
+    this.form.get('sorting').valueChanges.subscribe(val => {
+      // console.log('value chnaged: ', val);
+      this.benchmarkClaimData.sortConditionGroupData(val);
+
+      // graph data is not changing
+      this.updateChart(this.claimsJsonData);
+    });
   }
 
   ngOnChanges() {
@@ -153,6 +175,12 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
     this.benchmarkClaimData.processGraphData(this.totalMemberCount);
     this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
 
+    // console.log(this.benchmarkGraphData);
+
+    this.benchmarkGraphData.forEach(element => {
+      console.log(element);
+    });
+
     // update scale domain
     this.xScale.domain(this.benchmarkClaimData.getGraphData()[0].map(val => (val.data.key)));
     this.yScale.domain([0, this.benchmarkClaimData.getGraphMaxValue()]);
@@ -235,5 +263,9 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
   }
 
   // abc
+
+  click() {
+    console.log('click');
+  }
 
 }
