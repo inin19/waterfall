@@ -10,8 +10,14 @@ import * as d3 from 'd3';
   styleUrls: ['./waterfall-chart.component.css']
 })
 export class WaterfallChartComponent implements OnInit, OnChanges {
-  @ViewChild('claimsWaterfall') private chartContainer: ElementRef;
 
+  private static stackColor = {
+    Base: '#FFFFFF',
+    Fall: '#FFA500',
+    Rise: '#0000FF'
+  };
+
+  @ViewChild('claimsWaterfall') private chartContainer: ElementRef;
   @Input() private claimsJsonData: any[];
   @Input() private totalMemberCount: any[];
 
@@ -39,7 +45,7 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     // console.log(this.claimsJsonData);
-    this.getChartData();
+    this.updateChartData();
     this.createChart();
     this.updateChart(this.claimsJsonData);
 
@@ -47,11 +53,13 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     if (this.chart) {
-      console.log('ngChange');
+      console.log('ngChange, Input data change');
+      this.updateChartData();
+      this.updateChart(this.claimsJsonData);
     }
   }
 
-  getChartData() {
+  updateChartData() {
     this.benchmarkClaimData = new ClaimsData(this.claimsJsonData, this.totalMemberCount);
     this.benchmarkConditionGroupData = this.benchmarkClaimData.getConditionGroupDataCombined();
     this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
@@ -124,8 +132,108 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
       .attr('transform', 'rotate(-45)');
   }
 
-  updateChart(claimsJsonData: any[]) {
+  updateChart(claimsJsonData: any[], region?: string[], relation?: string[],
+    gender?: string[], claimType?: string[], ageGroup?: string[]) {
+    // update size
+    const htmlElement = this.chartContainer.nativeElement;
+    this.width = htmlElement.offsetWidth - this.margin.left - this.margin.right;
+    this.height = htmlElement.offsetHeight - this.margin.top - this.margin.bottom;
+
+    d3
+      .select('#claimsWaterfall svg')
+      .attr('width', htmlElement.offsetWidth)
+      .attr('height', htmlElement.offsetHeight);
+
+    // update scales
+    this.xScale.rangeRound([0, this.width]);
+    this.yScale.range([this.height, 0]);
+
+    // update graph data based on parameters
+    // add parameters later
+    this.benchmarkClaimData.processGraphData(this.totalMemberCount);
+    this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
+
+    // update scale domain
+    this.xScale.domain(this.benchmarkClaimData.getGraphData()[0].map(val => (val.data.key)));
+    this.yScale.domain([0, this.benchmarkClaimData.getGraphMaxValue()]);
+
+    // update axis
+    const xaxis = d3.axisBottom(this.xScale)
+      .tickSizeOuter(0);
+
+    const yaxis = d3.axisLeft(this.yScale)
+      .tickSizeOuter(0)
+      .tickFormat(d3.format('.2s'));
+
+    this.xAxis.transition().call(xaxis);
+    this.yAxis.transition().call(yaxis);
+
+
+
+    // start charting
+
+    // update stack groups
+    let groups = this.chart.selectAll('.group')
+      .data(['Base', 'Fall', 'Rise']);
+
+    groups.exit().remove();
+
+    // update eixisitng group
+    groups
+      .attr('fill', d => (WaterfallChartComponent.stackColor[d]));
+
+    // adding new groups
+    groups
+      .enter().append('g')
+      .classed('group', true)
+      .attr('fill', d => (WaterfallChartComponent.stackColor[d]));
+
+    // rejoin data VERY IMPORTANT
+    groups = this.chart.selectAll('.group')
+      .data(['Base', 'Fall', 'Rise']);
+
+
+
+    const bars = groups.selectAll('.bar')
+      .data((d) => this.benchmarkGraphData.filter((item) => item.key === d)[0]);
+
+    bars.exit().remove();
+
+    // update existing bars
+
+    bars
+      .transition()
+      .attr('x', d => this.xScale(d.data.key))
+      .attr('y', d => this.yScale(d[1]))
+      .attr('width', this.xScale.bandwidth())
+      .attr('height', d => this.yScale(d[0]) - this.yScale(d[1]));
+
+
+    // adding new bars
+    bars
+      .enter()
+      .append('rect')
+      .classed('bar', true)
+      .transition()
+      .attr('x', d => this.xScale(d.data.key))
+      .attr('y', d => this.yScale(d[1]))
+      .attr('width', this.xScale.bandwidth())
+      .attr('height', d => this.yScale(d[0]) - this.yScale(d[1]));
+
+    // console.log(this.benchmarkGraphData.filter((item) => item.key === 'Base')[0]);
 
   }
+
+  createLegend() {
+
+  }
+
+
+  @HostListener('window:resize', ['$event'])
+  onresize(event) {
+    this.updateChart(this.claimsJsonData);
+  }
+
+  // abc
 
 }

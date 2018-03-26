@@ -67,9 +67,9 @@ export class ClaimsData {
 
 
 
-    constructor(claimData: any[], totalMemeberCount: any[]) {
+    constructor(claimData: any[], totalMemberCount: any[]) {
         this.createDimensionGroup(claimData);
-        this.processGraphData(totalMemeberCount);
+        this.processGraphData(totalMemberCount);
     }
 
 
