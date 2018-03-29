@@ -370,10 +370,24 @@ export class ClaimsData {
         this.calculateWaterfallBaseFallRise();
     }
 
-    sortConditionGroupData(method: string) {
+    sortConditionGroupData(sortingMethod: string) {
 
-        switch (method) {
-            case 'Asc': this.conditionGroupData.sort((a, b) => a.Per_Capita - b.Per_Capita);
+        switch (sortingMethod) {
+            case 'Asc':
+                this.conditionGroupData.sort((a, b) => a.Per_Capita - b.Per_Capita);
+                console.log('Sorting Ascs');
+
+
+                // recalculate graph data
+                this.conditionGroupDataCombined = (new Array(this.conditionGroupPrevYearData)).concat(this.conditionGroupData).concat(this.conditionGroupCurrYearData);
+                this.graphData = d3.stack().keys(['Base', 'Fall', 'Rise'])(this.conditionGroupDataCombined);
+
+                // this.conditionGroupDataCombined.forEach(element => {
+                //     console.log(element);
+                // });
+
+
+
                 break;
             case 'Desc': this.conditionGroupData.sort((a, b) => b.Per_Capita - a.Per_Capita);
                 break;

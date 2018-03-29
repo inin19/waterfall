@@ -65,9 +65,16 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
 
   onFormChanges() {
     this.form.get('sorting').valueChanges.subscribe(val => {
-      // console.log('value chnaged: ', val);
+      console.log('value chnaged: ', val);
       this.benchmarkClaimData.sortConditionGroupData(val);
 
+      this.benchmarkConditionGroupData = this.benchmarkClaimData.getConditionGroupDataCombined();
+      this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
+
+
+      this.benchmarkGraphData.forEach(element => {
+        console.log(element);
+      });
       // graph data is not changing
       this.updateChart(this.claimsJsonData);
     });
@@ -175,11 +182,6 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
     this.benchmarkClaimData.processGraphData(this.totalMemberCount);
     this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
 
-    // console.log(this.benchmarkGraphData);
-
-    this.benchmarkGraphData.forEach(element => {
-      console.log(element);
-    });
 
     // update scale domain
     this.xScale.domain(this.benchmarkClaimData.getGraphData()[0].map(val => (val.data.key)));
@@ -201,8 +203,11 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
     // start charting
 
     // update stack groups
+    // let groups = this.chart.selectAll('.group')
+    //   .data(['Base', 'Fall', 'Rise']);
+
     let groups = this.chart.selectAll('.group')
-      .data(['Base', 'Fall', 'Rise']);
+      .data(['Fall', 'Rise']);
 
     groups.exit().remove();
 
@@ -217,13 +222,24 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
       .attr('fill', d => (WaterfallChartComponent.stackColor[d]));
 
     // rejoin data VERY IMPORTANT
+    // groups = this.chart.selectAll('.group')
+    //   .data(['Base', 'Fall', 'Rise']);
+
     groups = this.chart.selectAll('.group')
-      .data(['Base', 'Fall', 'Rise']);
+      .data(['Fall', 'Rise']);
+
 
 
 
     const bars = groups.selectAll('.bar')
       .data((d) => this.benchmarkGraphData.filter((item) => item.key === d)[0]);
+
+
+    // console.log('in updpate chart');
+
+    // this.benchmarkGraphData.forEach(element => {
+    //   console.log(element);
+    // });
 
     bars.exit().remove();
 
