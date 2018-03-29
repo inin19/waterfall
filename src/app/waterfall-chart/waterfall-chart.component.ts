@@ -57,7 +57,7 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
     this.onFormChanges();
 
     // console.log(this.claimsJsonData);
-    this.updateChartData();
+    this.createChartData();
     this.createChart();
     this.updateChart(this.claimsJsonData);
 
@@ -65,17 +65,8 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
 
   onFormChanges() {
     this.form.get('sorting').valueChanges.subscribe(val => {
-      console.log('value chnaged: ', val);
       this.benchmarkClaimData.sortConditionGroupData(val);
-
-      this.benchmarkConditionGroupData = this.benchmarkClaimData.getConditionGroupDataCombined();
       this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
-
-
-      this.benchmarkGraphData.forEach(element => {
-        console.log(element);
-      });
-      // graph data is not changing
       this.updateChart(this.claimsJsonData);
     });
   }
@@ -83,12 +74,12 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
   ngOnChanges() {
     if (this.chart) {
       console.log('ngChange, Input data change');
-      this.updateChartData();
+      this.createChartData();
       this.updateChart(this.claimsJsonData);
     }
   }
 
-  updateChartData() {
+  createChartData() {
     this.benchmarkClaimData = new ClaimsData(this.claimsJsonData, this.totalMemberCount);
     this.benchmarkConditionGroupData = this.benchmarkClaimData.getConditionGroupDataCombined();
     this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
@@ -161,6 +152,16 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
       .attr('transform', 'rotate(-45)');
   }
 
+
+
+  // apply filter here
+  updateChartData(region?: string[], relation?: string[], gender?: string[], claimType?: string[], ageGroup?: string[]) {
+    this.benchmarkClaimData.processGraphData(this.totalMemberCount);
+    this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
+  }
+
+
+
   updateChart(claimsJsonData: any[], region?: string[], relation?: string[],
     gender?: string[], claimType?: string[], ageGroup?: string[]) {
     // update size
@@ -179,8 +180,8 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
 
     // update graph data based on parameters
     // add parameters later
-    this.benchmarkClaimData.processGraphData(this.totalMemberCount);
-    this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
+    // this.benchmarkClaimData.processGraphData(this.totalMemberCount);
+    // this.benchmarkGraphData = this.benchmarkClaimData.getGraphData();
 
 
     // update scale domain
@@ -278,10 +279,5 @@ export class WaterfallChartComponent implements OnInit, OnChanges {
     this.updateChart(this.claimsJsonData);
   }
 
-  // abc
-
-  click() {
-    console.log('click');
-  }
 
 }

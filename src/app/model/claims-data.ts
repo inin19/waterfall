@@ -39,16 +39,11 @@ export class ClaimsData {
     private genderDimension: crossfilter.Dimension<any, any>;
     private ageGroupDimension: crossfilter.Dimension<any, any>;
     private claimTypeDimension: crossfilter.Dimension<any, any>;
-
-
     private conditionGroupingDimension: crossfilter.Dimension<any, any>;
 
     // groups
 
     private conditionGroupingDimensionGroup: crossfilter.Group<any, any, any>;
-
-
-
 
     // output
     private claimsAggregateData: any[];
@@ -59,21 +54,13 @@ export class ClaimsData {
     private conditionGroupCurrYearData: any;
 
     private conditionGroupDataCombined: any[];
-
-
     private graphData: any[];
-
-
-
 
 
     constructor(claimData: any[], totalMemberCount: any[]) {
         this.createDimensionGroup(claimData);
         this.processGraphData(totalMemberCount);
     }
-
-
-
 
 
     createDimensionGroup(data: Array<any>) {
@@ -88,7 +75,6 @@ export class ClaimsData {
         this.conditionGroupingDimensionGroup = this.conditionGroupingDimension.group();
 
         // get uniuqe groups values  this.conditionGroupingDimensionGroup.reduceCount().all()
-
     }
 
     processGraphData(totalMemeberCount: any[], region?: string[], relation?: string[],
@@ -306,7 +292,7 @@ export class ClaimsData {
         });
     }
 
-    reduceAdd = (p, v) => {
+    private reduceAdd = (p, v) => {
         p.currYearClaimCount_sum += v.currYearClaimCount;
         p.currYeartotalClaimCostAmount_sum += v.currYeartotalClaimCostAmount;
         p.prevYearClaimCount_sum += v.prevYearClaimCount;
@@ -314,7 +300,7 @@ export class ClaimsData {
         return p;
     }
 
-    reduceRemove = (p, v) => {
+    private reduceRemove = (p, v) => {
         p.currYearClaimCount_sum -= v.currYearClaimCount;
         p.currYeartotalClaimCostAmount_sum -= v.currYeartotalClaimCostAmount;
         p.prevYearClaimCount_sum -= v.prevYearClaimCount;
@@ -323,7 +309,7 @@ export class ClaimsData {
 
     }
 
-    reduceInit = () => {
+    private reduceInit = () => {
         return {
             currYearClaimCount_sum: 0, currYeartotalClaimCostAmount_sum: 0,
             prevYearClaimCount_sum: 0, prevYeartotalClaimCostAmount_sum: 0
@@ -352,50 +338,30 @@ export class ClaimsData {
         return this.conditionGroupCurrYearData;
     }
 
-    sortWaterfallASC(): void {
-        // this.temp.sort((a, b) => a.value - b.value);
-        this.conditionGroupData.sort((a, b) => a.Per_Capita - b.Per_Capita);
-        // recalculate base, fall, rise
-        this.calculateWaterfallBaseFallRise();
-    }
-
-    sortWaterfallDESC(): void {
-        this.conditionGroupData.sort((a, b) => b.Per_Capita - a.Per_Capita);
-        this.calculateWaterfallBaseFallRise();
-    }
-
-    restoreWaterfallOrder(): void {
-        this.conditionGroupData.sort((a, b) =>
-            ClaimsData.UK_ConditionGroupingTEST.indexOf(a.key) > ClaimsData.UK_ConditionGroupingTEST.indexOf(b.key) ? 1 : -1);
-        this.calculateWaterfallBaseFallRise();
-    }
-
     sortConditionGroupData(sortingMethod: string) {
 
         switch (sortingMethod) {
             case 'Asc':
                 this.conditionGroupData.sort((a, b) => a.Per_Capita - b.Per_Capita);
                 console.log('Sorting Ascs');
-
-
+                this.calculateWaterfallBaseFallRise();
                 // recalculate graph data
                 this.conditionGroupDataCombined = (new Array(this.conditionGroupPrevYearData)).concat(this.conditionGroupData).concat(this.conditionGroupCurrYearData);
                 this.graphData = d3.stack().keys(['Base', 'Fall', 'Rise'])(this.conditionGroupDataCombined);
-
-                // this.conditionGroupDataCombined.forEach(element => {
-                //     console.log(element);
-                // });
-
-
-
                 break;
-            case 'Desc': this.conditionGroupData.sort((a, b) => b.Per_Capita - a.Per_Capita);
+            case 'Desc':
+                this.conditionGroupData.sort((a, b) => b.Per_Capita - a.Per_Capita);
+                this.calculateWaterfallBaseFallRise();
+                this.conditionGroupDataCombined = (new Array(this.conditionGroupPrevYearData)).concat(this.conditionGroupData).concat(this.conditionGroupCurrYearData);
+                this.graphData = d3.stack().keys(['Base', 'Fall', 'Rise'])(this.conditionGroupDataCombined);
                 break;
             default:
                 this.conditionGroupData.sort((a, b) =>
                     ClaimsData.UK_ConditionGroupingTEST.indexOf(a.key) > ClaimsData.UK_ConditionGroupingTEST.indexOf(b.key) ? 1 : -1);
+                this.calculateWaterfallBaseFallRise();
+                this.conditionGroupDataCombined = (new Array(this.conditionGroupPrevYearData)).concat(this.conditionGroupData).concat(this.conditionGroupCurrYearData);
+                this.graphData = d3.stack().keys(['Base', 'Fall', 'Rise'])(this.conditionGroupDataCombined);
         }
-        this.calculateWaterfallBaseFallRise();
     }
 
     getWaterfallMinBaseValue(): number {
@@ -419,11 +385,6 @@ export class ClaimsData {
             return temp > accumulator ? temp : accumulator;
         }, Number.NEGATIVE_INFINITY);
         return maxValue;
-    }
-
-    getGraphMinBaseValue(): number {
-
-        return 0;
     }
 
 }
